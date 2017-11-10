@@ -1,9 +1,10 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[12pt,a4paper,titlepage]{extarticle}
 \usepackage[czech]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[text={17cm,24cm},left=2cm,top=2.5cm]{geometry}
 \usepackage{times}
+\usepackage{enumitem}
 \showboxdepth=\maxdimen
 \showboxbreadth=\maxdimen
 \providecommand{\uvoz}[1]{\quotedblbase #1\textquotedblleft}
@@ -11,58 +12,101 @@
 
 \begin{document}
 
-\noindent \textbf{Dokumentace úlohy:} MKA: Minimalizace konečného automatu v Pythonu do IPP 2014/2015\\
-\textbf{Jméno a příjmení:} Jan Kubiš\\
-\textbf{Login:} xkubis13\\
-\smallskip
+\begin{titlepage}
 \begin{center}
-	\begin{LARGE}\textbf{Dokumentace k 2. projektu IPP 14/15}\end{LARGE}\\
-	\begin{large}(MKA: Minimalizace konečného automatu)\end{large}
+
+\begin{Huge}\textsc{Fakulta informačních technologií\\Vysoké učení technické v Brně}\end{Huge}
+
+\vspace{\stretch{0.382}}
+\begin{LARGE} \textbf{ISA projekt\,--\,Dokumentace}\end{LARGE}
+\\ \vspace{2mm}
+\begin{LARGE}Offline NetFlow sonda\end{LARGE}
+\vspace{\stretch{0.618}}
+
 \end{center}
-\bigskip
 
-\begin{itemize}[leftmargin=0cm]
-\item{\textbf{Zadání úlohy}}
-\end{itemize}
-Skript \uvoz{mka.py} je implementován v jazyce Python. Slouží pro práci s konečným automatem, především pro jeho minimalizaci. Vstup i výstup jsou v textové formě. Odkud se čte a kam se zapisuje volí uživatel parametry při spouštění.
+\begin{large}\today  \hfill  Jan Kubiš\end{large}
+\end{titlepage}
 
-\begin{itemize}[leftmargin=0cm]
-\item{\textbf{Argumenty příkazové řádky a jejich zpracování}}
-\end{itemize}
-Skript lze spustit jak bez argumentů, tak s některými z následujících:
-	\begin{enumerate}
-	\item \emph{-\--input=}PATH určuje, kde odkud má skript číst zadaný konečný automat. Při vynechání tohoto parametru se autot čte ze standartního vstupu. Při jeho použití musí být doplněn o validní cestu PATH k souboru. Je-li zadána nevalidní, skript končí s návratovou hodnotou 2.
-	
-	\item \emph{-\--output=}PATH určuje, kam se bude zapisovat veškerý výstup skriptu. Není-li uveden, proběhne výpis na standartní výstup. Pokud je zadán s nevalidní cestou PATH, skript je ukončen a vrací hodnotu 3.
-	\item \emph{-m} zadává se, chceme li automat na vsutpu minimalizovat. Nelze kombinovat s parametrem \emph{-f}.
-	\item \emph{-f} automat na vstupu je zpracován, obsahuje-li právě jeden neukončující stav, je tento vypsán jako výstup skriptu. Nelze kombinovat s parametrem \emph{-m}.
-	\item \emph{-i} při načítání automatu se nehledí na velikost písma.
-	\end{enumerate}
-
-\noindent Nápověda se zobrazí při spuštění s parametrem \emph{--help}.Pokud nebyl zadán přepínač \emph{-m} ani \emph{-f}, na výstupu je vypsán automat, který byl zadaný -- avšak v normalizované formě. Po zkušenostech z předchozího projektu jsem si na argumenty udělal rovnou vlastní parser. Zkontroluje validitu a nastaví řídící proměnné skriptu.
-
-
-\begin{itemize}[leftmargin=0cm]
-\item{\textbf{Zpracování vstupu}}
-\end{itemize}
-Ze všeho nejdřív je konečný automat na vstupu prohnán naimplementovaným konečným automatem, který z něj odstraní všechny komentáře, a taky nahradí řídící znaky pro popis automatu (obyčejné závorky, složené závorky, čárka, apostrof, znak začátku komentáře) vlastním textem -- ty se totiž mohou objevit i jako symbol vstupní abecedy, a proto je potřeba je rozlišit. Řešit tento problém regulárními výrazy mi přišlo zdlouhavé. Stačilo zavést automat, který se řídí pomocí boolean proměnné držící informaci o tom, zda-li se nacházíme ve stavu zapisování symbolu vstupní abecedy nebo mimo něj. To je asi vše co se dá v této chvíli dělat -- následuje kontrola lexikální a syntaktické validity zápisu automatu pomocí regulárních výrazů. Například odstranění případných mezer není nyní možné (\emph{Q=\{s1,s\textvisiblespace 2,s3\}} je chybný zápis, avšak \emph{Q=\{s1,s2,s3\}} už správný). Celek je reguláry rozdělen a každá komponenta pětice nahrána zvlášť. V dalším kroce probíhá jejich kontrola. Položky komponenty jsou nahrány do seznamu jejím rozdělením v místě řídící čárky. Vypuštění všech bílých znaků může proběhnout po kontrole jednotlivých položek -- regulární výrazy provádějící tuto kontrolu tedy musí být doplněny o možné bílé znaky na správných místech. Prázdný řetězec není symbol, pokud se tedy objeví ve vstupní abecedě, chyba se hlásí odtud. Takto probíhá \textbf{lexikální a syntaktická kontrola} zadaného automatu.
+\tableofcontents
 \newpage
-\bigskip
-Po dokončení předchozí části proběhne \textbf{sémantická kontrola}. Položky všech komponent jsou uloženy v poli v normalizovaném tvaru, můžou se tedy vzájemně porovnávat. Konkrétně počáteční stav, koncové stavy a části položek přechodových pravidel jsou kontrolovány, zda-li neobsahují stav resp. symbol který nepatří do množiny všech stavů resp. do vstupní abecedy. Pokud ano, skript hlásí sémantickou chybu. Stejnětak je-li množina reprezentující vstupní abecedu prázdná.
 
-Po dokončení předchozí části proběhne \textbf{kontrola na dobrou specifikovanost} automatu. Je vyžadováno, aby pro každý stav existovalo právě jedno (determinismus) přechodové pravidlo pro každý symbol. Kontroluje se tedy počet pravidel se součinem kardinalit zmíněných množin a také shodnost levých stran pravidel. Je-li v~pravidlech uveden epsilon přechod, chyba se hlásí odtud. Nakonec je potřeba testovat existenci nedostupných a~neukončujících stavů (při nálezu nedostupného stavu je hlášena chyba, neukončující stav může být maximálně jeden -- ten se zde i případně nahraje do speciální proměnné, se kterou se pracuje, byl-li zadán argument~\emph{-f}).
+\section{Uvedení do problematiky}
 
+\subsection{Zadání úlohy}
+Cílem je implementace analyzátoru zachycené síťové komunikace ve formatu PCAP, který bude fungovat jako offline NetFlow sonda. Musí být také schopen exportovat vypočítané statistiky na kolektor.
 
-\begin{itemize}[leftmargin=0cm]
-\item{\textbf{Tvorba výstupu}}
+\subsection{NetFlow}
+Technologie NetFlow byla vyvinuta společností Cisco systems. Slouží především k~monitorování toku (flow) dat v~síti (odkud, kam, typ spojení, délka spojení, velikost dat~apod.). Výsledky tedy mohou po správné interpretaci významně pomoci s~pochopením pochodů uvnitř sítě a~tedy s~její případnou optimalizací, zabezpečením, rozšiřováním či jakoukoliv jinou modifikací.
+\\Celý proces běžně zajišťují 3~komponenty:
+\begin{itemize}[noitemsep,nolistsep]
+\item exporter -- packet sniffing, zařazování paketů do příslušných flows, kontrola expirace flows, výpočet statistik a jejich export na kolektor (cíl projektu)
+\item kolektor -- agreguje a uchovává data z jednoho až několika exporterů
+\item interpret -- vhodně interpretuje nasbíraná data
 \end{itemize}
-V této chvíli máme načtený dobře specifikovaný automiat. Výstup záleží na zvoleném přepínači \emph{-m} /\emph{-f}. Pokud uživatel nezvolil ani jeden, obsah komponent automatu je lexigofraficky uspořádán, poté podle pravidel normalizovaného výstupu poskládán do výstupního řetězce. Ten je následně vypsán na výstup zvolený argumentem \emph{-\--output}. Volil-li argument \emph{-m}, ještě před uspořádáním a výpisem je automat minimalizován. V případě argumentu \emph{-f} se pouze vypíše nalezený neukončující stav (případně 0) a skript končí.
+Existuje více NetFlow verzí, tento projekt pracuje s~verzí NetFlow v5.
 
+\subsection{Pasivní NetFlow sonda}
+Pasivní NetFlow sonda je alternativní architektura k~nepříliš efektivní klasické architektuře, kdy je exportér umístěn přímo na routeru, a~zpomaluje tak jeho směrovací činnost. To lze kompenzovat například diskrétním vzorkováním, avšak za cenu snížení přesnosti statistik, které v~nejhorším případě nemusí být nijak vypovídající.
+\\Proto vznikl přístup pasivních sond, které směrovačů této zátěže zbavují. Dedikované zařízení je v~místě potřeby transparentně připojené na linku a~odposlouchává všechny průchozí pakety. Z~těch poté vypočítá a~exportuje statistiky na kolektor.
 
-\begin{itemize}[leftmargin=0cm]
-\item{\textbf{Minimalizace}}
+\subsection{NetFlow v5}
+Verze NetFlow specifikuje, která data z~paketů (případně které pakety) budou zahrnuty do statistik, a~jak budou jednotlivé položky statistik uspořádány při exportu na kolektor\,--\,tzv.~NetFlow~diagram. Ten se skládá z~headeru a~recordu. Co která část obsahuje je možno dohledat na stránkách Cisco Systems.
+\\Pro naše účely bude implementována verze~5, která je v~současnosti nejrozšířenější. Zpracovává pouze pakety se síťovým protokolem IPv4. Statistiky jsou na kolektor přenášeny v~UDP paketu ve formátu header+n*record, kde n~nabývá maximálně hodnoty 30.
+
+\pagebreak
+
+\section{Návrh aplikace}
+
+\subsection{Offline sonda}
+Vytvářená aplikace je sonda typu offline. To znamená, že analyzovaná komunikace nebude probíhat v reálném čase přímo na síťové kartě, nicméně bude načtena ze souboru, případně ze STDIN. Veškeré časové údaje nutné pro řízení skriptu nebo výpočet statistik budou čerpány z jednotlivých paketů. Čas tedy bude plynout diskrétně, od hodnoty k hodnotě, na základě timestampu právě zpracovávaného paketu. Z toho vyplývá, že po zpracování posledního paketu ze souboru bude potřeba uměle skočit v čase do nekonečna (pouze hypoteticky, toto bude řešeno implementací vhodného workaroundu), jelikož by se čas exporteru zastavil na jeho čase a dál nepokračoval, na rozdíl od real-time sondy.
+
+\subsection{Explicitní specifika}
+Na rozdíl od klasických pravidel agregace bude v~tomto projektu každý UDP paket tvořit samostatnou flow o~nulové délce trvání (okamžitá expirace). TCP spojení budou sledována pouze jednosměrně. To má dopad hlavně na uzavírání spojení: pošle-li jedna strana paket s~příznakem FIN nebo RST, flow do které náleží bude okamžitě expirována. Exporter dále zpracovává pakety ICMP a~IGMP (okamžitá expirace v obou případech).
+
+\subsection{Řídící argumenty}
+Skript lze spustit jak bez argumentů, tak s některými z následujících:
+	\begin{itemize}[noitemsep,nolistsep]
+	\item \emph{-i /-\--input <PATH>} určuje, odkud bude aplikace načítat zachycenou komunikaci. Při vynechání tohoto parametru je komunikace očekávána na standartním vstupu. Při jeho použití musí být doplněn o validní cestu \emph{PATH} k~souboru. Je-li zadána nevalidní, skript vypíše chybu, stejně tak v~případě špatného formátu vstupního souboru.	
+	\item \emph{-c -\--collector <IP|hostname:port>} určuje adresu na kterou se budou zasílat vypočítané statistky. Volitelně lze zadat i~port cílového zařízení. Implicitně~localhost:2055.
+	\item \emph{-I -\--interval <sec>} udává interval, v~jakém bude sonda provádět export. Implicitně~300.
+	\item \emph{-m -\--max-flows <cnt>} maximální držitelý počet aktivních flows. V~případě, že by měl být překročen, vyexpiruje se flow s~nejdelším timeoutem a~tak uvolní místo nově přidávané. Implicitně~50.
+	\item \emph{-t -\--tcp-timeout <sec>} pokud některá z~TCP flows bude neaktivní déle než zadaná hodnota, bude vyexpirována. Implicitně~300. 
+	\end{itemize}
+\noindent Nápověda se zobrazí při spuštění s parametrem \emph{--help}.\\Při spuštění s parametrem \emph{-b} se vypíše očekávaný počet bodů za projekt.
+
+\subsection{Pořadí operací}
+Real-time sonda tedy umí v~jakémkoliv bodě zjistit aktuální čas (vyprší nastavený časovač) a~je-li to nutné, vykonat požadované operace. Offline sonda musí s~každým novým paketem ze všeho nejdříve zjistit, zda neuplynul interval pro export a~zda některé z aktivních flows nemají být expirovány na základě tcp-timeout. Teprve potom mohou daný paket zpracovat a~případně zařadit do flow, nikoliv v~opačném pořadí! Po rozhodnutí, že daný paket nepatří do žádné z~aktivních flows, ale založí novou, je potřeba porovnat počet všech aktivních s maximálním možným počtem.
+
+\pagebreak
+
+\section{Popis Implementace}
+Na doporučení kolegů je program implementován v~jazyce Python, ve kterém je dostupná velmi vhodná knihovna Scapy. Verze předinstalovaná na virtuálním disku má v~sobě určité chyby, napřiklad počítá špatně velikost DNS paketů, proto je potřeba ji nejprve aktualizovat na nejnovější verzi 2.3.1, což se děje pomocí Makefile. Ten také udělí potřebná práva pro spušťení skriptu.
+
+\subsection{Zpracování argumentů příkazové řádky}
+Z~předchozích zkušeností pro parsování argumentů nepoužívám knihovní funkci getopt a~proto byla implementována funkce přizpůsobená speciálně tomuto projektu, která je mimo jiné nachystána na případné modifikace. Kontroluje se například duplicita zadaných argumentů, validita zadané IP adresy a~hodnoty portu, kontrola existence zadaného vstupního souboru a~jeho formátu.
+
+\subsection{Hlavní smyčka}
+Většina běhu programu se odehrává ve for cyklu, který iteruje přes všechny pakety ze souboru. Při každém dalším paketu se aktualizuje čas sondy. V~zápětí probíha kontrola ohledně vypršení intervalu pro export. V~dalším kroku je zpracovávaný paket předán do funkce, která pokračuje pouze za předpokladu, že je typu IPv4 s~protokolem TCP/UDP/ICMP/IGMP. Tato funkce hledá flow, do které by mohl být zařazen. Pro ušetření výpočetního času v tomto kroce zároveň probíhá kontrola timeoutu všech aktivních flows. Ta je samozřejmě testována ještě před zařazením paketu do flow, a~pokud by měla být expirována, přeskakuje se (do té už aktuální paket zařadit nemůžeme). Flow je implementována jako třída s~příslušnými atributy, v~rámci ní jsou zde dvě statická pole: jedno pro aktivní a~druhé pro expriované flows. Pokud byla nalezena odpovídající flow, je do ní paket přidán, a~to pomocí funkce, ktera na základě něj modifikuje dosavadní statistiky pro tuto flow (velikost, timestamp, počet paketů..), případně ji vyexpiruje (TCP s flagem FIN/RST). Pokud nalezena nebyla, je vytvořena nová instance třídy Flow, která při svém vytváření pomocí \emph{init} také rozhodne, do kterého ze dvou polí patří (může jít rovnou do expirovaných - UDP/ICMP/IGMP nebo TCP s~flagem FIN/RST). Po jejím vytvoření se kontroluje, zda nebyl přesažen maximální počet aktivních flows. Pokud ano, pomocí for cyklu se ze všech aktivních flows vybere ta, která byla nejdéle neaktivní a~expiruje se.
+
+\subsection{Exportace}
+Z~definice NetFlow v5~diagramu vyplývá, že se může exportovat maximálně po 30 záznamech. Funkce pro export tedy obsahuje řídící while, který se opakuje, dokud je pole expirovaných neprázdné. Je-li počet zbývajících záznamů větší než 30, vytvoří se dočasné pole obsahující prvních 30, které se z~původního smažou. Je-li menší, do pole se přesune zbytek. Tuto práci zajišťuje slice metoda. Toto dočasné pole je při každém průchodu posláno do funkce k sestavení v5~diagramu, který je funkcí vracen. Některé položky headeru a~recordu nejsou z~komunikace zjistitelné, do těch je natvrdo vložena nekonfliktní hodnota. Vrácený diagram je poté poslán do funkce k~odeslání diagramu. Odesílá se přes UDP paket na adresu specifikovanou v argumentech při spouštění.
+\pagebreak
+
+\section{Informace o programu}
+\begin{itemize}[noitemsep]
+	\item Implementační jazyk: Python
+	\item Počet souborů: 1
+	\item Počet řádků: 388
+	\item Velikost souboru: 11.1 kB
 \end{itemize}
-Algoritmus minimalizace z přednášek je na pochopení poměrně jednoduchý. Implementace však už tak jednoduchá nebyla. Štěpení množiny stavů se mi nepodařilo zajistit jinak než spoustou zanořených cyklů -- vzhledem k tomu, že se potřebují prostřídat všechny možné kombinace prvků pěti množin to nejspíš ani jinak možné není. Za největší překážku považuju problém rozdělení množin podle stavu na pravé straně vybraných pravidel. V ukázkovém řešení minimalizace v předmětu IFJ je totiž popsán ideální případ, kdy se množiny buď vůbec nedělí a nebo se dělí na dvě další. Při jiném zadání by se ale mohlo stát, že se bude rozdělovat po X prvcích na Y množin. Po dlouhém přemýšlení ale vyšlo najevo, že toto není potřeba řešit -- stačilo vždy příslušnou množinu rozdělit ne na Y, ale na 2 množiny. Zbylá množina stavů je totiž rozšštěpena (je-li to možné) hned v dalším průchodu (zajišťuje jej cyklus \emph{while}, který pokračuje, dokud se množina mění -- je co rozdělovat). Před dalším průchodem jsou nalezené prvky odebrány z míst v původní množině ke štěpení a jsou přidány jako další samostatná množina. Pokud je štěpení hotové, podle výsledků jsou přetvořeny komponenty KA -- množina stavů, pravidel, počáteční stav a množina koncových stavů.
+
+\section{Návod na použití}
+\begin{itemize}[noitemsep]
+	\item příkazem \emph{make} se provede stažení a~instalace/aktualizace podpůrných knihoven a~nastavení potřebných práv pro spuštění skriptu
+	\item skript spouštějte s~následující syntaxí: \\./isaexporter [-i <file>] [-c <ip|hostname>[:<port>]] [-I <sec>] [-m <cnt>] [-t <sec>]
+\end{itemize}
 
 \end{document}
+
 
